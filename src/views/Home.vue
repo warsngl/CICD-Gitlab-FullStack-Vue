@@ -1,32 +1,40 @@
 <template lang='pug'>
 .table
   .nav
-    .id №
+    .id(@click="sort('id')") №
     .status 
       select(v-model='status')
         option(value='0') Статус
         option Открыта
         option Закрыта
-    .position 
+      .arrow(@click="sort('status')" :class='{sortDown: reverse, sortUp:!reverse}')
+    .position
       select(v-model='position')
         option(value='0') Должность
         option Junior
         option Middle
         option Senior 
         option Full 
+      .arrow(@click="sort('position')" :class='{sortDown: reverse, sortUp:!reverse}')
     .city
       input(v-model='city' placeholder='Город')
+      .arrow(@click="sort('city')" :class='{sortDown: reverse, sortUp:!reverse}')
     .name 
       input(v-model='name' placeholder='Наименование')
+      .arrow(@click="sort('name')" :class='{sortDown: reverse, sortUp:!reverse}')
     .date Дата размещения
+      v-date-picker.calendar(
+        v-model='range'
+        is-range
+      )
   .body
-    .row(v-for='(r,idx) in frows' :key='idx')
+    .row(v-for='(r,idx) in srows' :key='idx')
       .id {{r.id}}
       .status {{r.status}}
       .position {{r.position}}
       .city {{r.city}}
       .name {{r.name}}
-      .date {{r.date}}
+      .date {{r.date.toJSON() | date('date')}}
   .statusBar
     .result Найдено
     .pagination 1 2 3
@@ -34,20 +42,25 @@
 </template>
 
 <script>
-
 export default {
   data(){
     return{
       rows:[
-        {'id':0,'status':'Открыта','position':'Junior','city':'syk','name':'andrey','date':'21.01.2021'},
-        {'id':1,'status':'Открыта','position':'Middle','city':'msc','name':'tom','date':'21.01.2021'},
-        {'id':2,'status':'Закрыта','position':'Senior','city':'spb','name':'john','date':'21.01.2021'},
-        {'id':3,'status':'Открыта','position':'Full','city':'krd','name':'mike','date':'21.01.2021'}
+        {'id':0,'status':'Открыта','position':'Junior','city':'syk','name':'andrey','date':new Date(2021, 0, 20)},
+        {'id':1,'status':'Открыта','position':'Middle','city':'msc','name':'tom','date':new Date(2021, 0, 22)},
+        {'id':2,'status':'Закрыта','position':'Senior','city':'spb','name':'john','date':new Date(2021, 0, 23)},
+        {'id':3,'status':'Открыта','position':'Full','city':'krd','name':'mike','date':new Date(2021, 0, 24)}
       ],
       status:'0',
       position:'0',
       city:'',
-      name:''
+      name:'',
+      sortBy:'',
+      reverse:false,
+      range:{
+        start: new Date(2021, 0, 1),
+        end: new Date(2021,2,2)
+      }
     }
   },
   computed:{
@@ -61,27 +74,57 @@ export default {
           return this.city=='' || r.city.toLowerCase().includes(this.city) 
       }).filter(r=>{
           return this.name=='' || r.name.toLowerCase().includes(this.name) 
+      }).filter(r=>{
+          return this.range==null || (r.date>this.range.start && r.date<this.range.end)
+      })
+    },
+    srows(){
+      return this.frows.slice(0).sort((a,b)=> {
+        let d=(this.reverse)?1:-1
+        if(a[this.sortBy] < b[this.sortBy]) return -1*d
+        if(a[this.sortBy] > b[this.sortBy]) return 1*d
+        return 0
       })
     }
   },
   methods:{
-
-  },
-
+    sort(sortBy){
+      this.reverse=(this.sortBy==sortBy)? ! this.reverse:false
+      this.sortBy=sortBy
+    }
+  }
 }
 </script>
 
 <style lang='stylus'>
 body, html, #app, .table
   height 100%
-  margin 0
-  padding 0 10px
+  margin 0 
+  padding 0
   background-color pink
+.id,.status,.position,.city,.name,.date
+  text-align center
+.id
+  width 5%
+.status
+  width 15%
+.position
+  width 12%
+.city
+  width 11%
+  &>input
+    width 100%
+.name
+  width 15%
+  &>input
+    width 100%
+.date
+  width 20%
 .table
   display flex
   flex-direction column
 .nav
-  margin-top 10px
+  margin-top 5px
   display flex
   justify-content space-between
 .row
@@ -94,4 +137,18 @@ body, html, #app, .table
   display flex
   justify-content space-between
   flex-shrink 0
+.arrow
+  width 10px
+  border-radius 10px
+.sortDown
+  background-color green
+.sortUp
+  background-color blue
+.calendar
+  position absolute
+  display none
+  z-index 2
+.date:hover .calendar
+  display block
+  transform translateX(-60px)
 </style>
