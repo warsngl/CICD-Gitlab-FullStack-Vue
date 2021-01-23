@@ -40,6 +40,10 @@
     .pagination {{page+1}}
     button.prev(:disabled='page==0' @click='prevPage') Prev
     button.next(:disabled='page==-1' @click='nextPage') Next
+    select(v-model='size')
+      option(value=1) 1 на странице
+      option(value=2) 2 на странице
+      option(value=3) 3 на странице
     button.reset(@click='reset') Сбросить
 </template>
 
