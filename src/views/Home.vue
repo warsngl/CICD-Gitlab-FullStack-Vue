@@ -22,7 +22,7 @@
     .name 
       input(v-model='name' placeholder='Наименование')
       .arrow(@click="sort('name')" :class='{sortDown: reverse, sortUp:!reverse}')
-    .date Дата размещения
+    .date Дата
       v-date-picker.calendar(
         v-model='range'
         is-range
