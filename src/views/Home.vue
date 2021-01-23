@@ -22,13 +22,13 @@
     .name 
       input(v-model='name' placeholder='Наименование')
       .arrow(@click="sort('name')" :class='{sortDown: reverse, sortUp:!reverse}')
-    .date Дата размещения
+    .date Дата
       v-date-picker.calendar(
         v-model='range'
         is-range
       )
   .body
-    .row(v-for='(r,idx) in srows' :key='idx')
+    .row(v-for='(r,idx) in sortedData' :key='idx')
       .id {{r.id}}
       .status {{r.status}}
       .position {{r.position}}
@@ -36,7 +36,7 @@
       .name {{r.name}}
       .date {{r.date.toJSON() | date()}}
   .statusBar
-    .result Найдено {{frows.length}}
+    .result Найдено {{filteredData.length}}
     .pagination {{page+1}}
     button.prev(:disabled='page==0' @click='prevPage') Prev
     button.next(:disabled='page==-1' @click='nextPage') Next
@@ -51,7 +51,7 @@
 export default {
   data(){
     return{
-      rows:[
+      data:[
         {'id':0,'status':'Открыта','position':'Junior','city':'syk','name':'andrey','date':new Date(2021, 0, 20)},
         {'id':1,'status':'Открыта','position':'Middle','city':'msc','name':'tom','date':new Date(2021, 0, 22)},
         {'id':2,'status':'Закрыта','position':'Senior','city':'spb','name':'john','date':new Date(2021, 0, 23)},
@@ -72,8 +72,8 @@ export default {
     }
   },
   computed:{
-    frows(){
-      return this.rows
+    filteredData(){
+      return this.data
         .filter(r=>{
           return this.status==0 || r.status==this.status
       }).filter(r=>{
@@ -86,7 +86,7 @@ export default {
           return this.range==null || (r.date>this.range.start && r.date<this.range.end)
       })
     },
-    srows(){
+    sortedData(){
       return this.pagList.slice(0).sort((a,b)=> {
         let d=(this.reverse)?1:-1
         if(a[this.sortBy] < b[this.sortBy]) return -1*d
@@ -95,12 +95,12 @@ export default {
       })
     },
     pageCount(){
-      let l=this.frows.length, s=this.size
+      let l=this.filteredData.length, s=this.size
       return Math.ceil(l/s)
     },
     pagList(){
       const start=this.page*this.size, end=start+this.size
-      return this.frows.slice(start,end)
+      return this.filteredData.slice(start,end)
     }
   },
   methods:{
