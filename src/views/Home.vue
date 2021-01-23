@@ -34,11 +34,13 @@
       .position {{r.position}}
       .city {{r.city}}
       .name {{r.name}}
-      .date {{r.date.toJSON() | date('date')}}
+      .date {{r.date.toJSON() | date()}}
   .statusBar
-    .result Найдено
-    .pagination 1 2 3
-    button.reset
+    .result Найдено {{frows.length}}
+    .pagination {{page+1}}
+    button.prev(:disabled='page==0' @click='prevPage') Prev
+    button.next(:disabled='page==-1' @click='nextPage') Next
+    button.reset(@click='reset') Сбросить
 </template>
 
 <script>
@@ -57,6 +59,8 @@ export default {
       name:'',
       sortBy:'',
       reverse:false,
+      page:0,
+      size:2,
       range:{
         start: new Date(2021, 0, 1),
         end: new Date(2021,2,2)
@@ -79,18 +83,44 @@ export default {
       })
     },
     srows(){
-      return this.frows.slice(0).sort((a,b)=> {
+      return this.pagList.slice(0).sort((a,b)=> {
         let d=(this.reverse)?1:-1
         if(a[this.sortBy] < b[this.sortBy]) return -1*d
         if(a[this.sortBy] > b[this.sortBy]) return 1*d
         return 0
       })
+    },
+    pageCount(){
+      let l=this.frows.length, s=this.size
+      return Math.ceil(l/s)
+    },
+    pagList(){
+      const start=this.page*this.size, end=start+this.size
+      return this.frows.slice(start,end)
     }
   },
   methods:{
     sort(sortBy){
       this.reverse=(this.sortBy==sortBy)? ! this.reverse:false
       this.sortBy=sortBy
+    },
+    nextPage(){
+      this.page++
+    },
+    prevPage(){
+      this.page--
+    },
+    reset(){
+      this.status='0',
+      this.position='0',
+      this.city='',
+      this.name='',
+      this.sortBy='',
+      this.reverse=false,
+      this.range={
+        start: new Date(2021, 0, 1),
+        end: new Date(2021,2,2)
+      }
     }
   }
 }
@@ -103,7 +133,8 @@ body, html, #app, .table
   padding 0
   background-color pink
 .id,.status,.position,.city,.name,.date
-  text-align center
+  display flex
+  justify-content center
 .id
   width 5%
 .status
@@ -121,6 +152,7 @@ body, html, #app, .table
 .date
   width 20%
 .table
+  margin 0 10px
   display flex
   flex-direction column
 .nav
@@ -133,12 +165,13 @@ body, html, #app, .table
 .body
   flex 1 0 auto
 .statusBar
-  margin-bottom 25px
+  margin-bottom 5px
   display flex
   justify-content space-between
   flex-shrink 0
 .arrow
   width 10px
+  height 100%
   border-radius 10px
 .sortDown
   background-color green
@@ -151,4 +184,11 @@ body, html, #app, .table
 .date:hover .calendar
   display block
   transform translateX(-60px)
+@media (max-width:610px)
+  .table
+    font-size 12px
+  ::-webkit-input-placeholder
+    font-size 8px
+  select
+    font-size 8px
 </style>
