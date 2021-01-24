@@ -1,37 +1,33 @@
 <template lang='pug'>
 .table
-  v-card.nav(flat tile)
-    v-card.id(@click="sort('id')" flat tile) №
-    v-card.status(flat tile)
-      v-select(
-        :items="statuses"
-        label="Статус"
-        dense
-        v-model='status')
-      v-btn(icon @click="sort('status')")
-        v-icon mdi-ArrowUpDown
-    v-card.position(flat tile)
-      v-select(
-        :items="positions"
-        label="Должность"
-        dense
-        v-model='position')
-      v-btn(icon @click="sort('position')")
-        v-icon {{reverse?'mdi-chevron-up':'mdi-chevron-down'}}
-    v-card.city(flat tile)
-      v-text-field(v-model='city' label='Город')
-      v-btn(icon @click="sort('city')")
-        v-icon mdi-ArrowUpDown
-    v-card.name(flat tile) 
-      v-text-field(v-model='name' label='Наименование') 
-      v-btn(icon @click="sort('name')")
-        v-icon mdi-ArrowUpDown
-    v-card.date(flat tile) Дата
+  .nav
+    .id(@click="sort('id')") №
+    .status 
+      select(v-model='status')
+        option(value='0') Статус
+        option Открыта
+        option Закрыта
+      .arrow(@click="sort('status')" :class='{sortDown: reverse, sortUp:!reverse}')
+    .position
+      select(v-model='position')
+        option(value='0') Должность
+        option Junior
+        option Middle
+        option Senior 
+        option Full 
+      .arrow(@click="sort('position')" :class='{sortDown: reverse, sortUp:!reverse}')
+    .city
+      input(v-model='city' placeholder='Город')
+      .arrow(@click="sort('city')" :class='{sortDown: reverse, sortUp:!reverse}')
+    .name 
+      input(v-model='name' placeholder='Наименование')
+      .arrow(@click="sort('name')" :class='{sortDown: reverse, sortUp:!reverse}')
+    .date Дата
       v-date-picker.calendar(
         v-model='range'
         is-range
       )
-  v-card.body(flat tile)
+  .body
     .row(v-for='(r,idx) in sortedData' :key='idx')
       .id {{r.id}}
       .status {{r.status}}
@@ -39,7 +35,7 @@
       .city {{r.city}}
       .name {{r.name}}
       .date {{r.date.toJSON() | date()}}
-  v-card.statusBar(flat tile)
+  .statusBar
     .result Найдено {{filteredData.length}}
     .pagination {{page+1}}
     button.prev(:disabled='page==0' @click='prevPage') Prev
@@ -48,7 +44,7 @@
       option(value=1) 1 на странице
       option(value=2) 2 на странице
       option(value=3) 3 на странице
-    v-btn.reset(elevation="6" @click='reset') Сбросить
+    button.reset(@click='reset') Сбросить
 </template>
 
 <script>
@@ -61,8 +57,8 @@ export default {
         {'id':2,'status':'Закрыта','position':'Senior','city':'spb','name':'john','date':new Date(2021, 0, 23)},
         {'id':3,'status':'Открыта','position':'Full','city':'krd','name':'mike','date':new Date(2021, 0, 24)}
       ],
-      status:'',
-      position:'',
+      status:'0',
+      position:'0',
       city:'',
       name:'',
       sortBy:'',
@@ -72,9 +68,7 @@ export default {
       range:{
         start: new Date(2021, 0, 1),
         end: new Date(2021,2,2)
-      },
-      statuses:['Открыта','Закрыта'],
-      positions:['Junior','Middle','Senior','Fullstack']
+      }
     }
   },
   computed:{
@@ -141,6 +135,7 @@ body, html, #app, .table
   height 100%
   margin 0 
   padding 0
+  background-color pink
 .id,.status,.position,.city,.name,.date
   display flex
   justify-content center
@@ -152,8 +147,12 @@ body, html, #app, .table
   width 12%
 .city
   width 11%
+  &>input
+    width 100%
 .name
   width 15%
+  &>input
+    width 100%
 .date
   width 20%
 .table
@@ -161,7 +160,7 @@ body, html, #app, .table
   display flex
   flex-direction column
 .nav
-  margin-top 15px
+  margin-top 5px
   display flex
   justify-content space-between
 .row
@@ -174,6 +173,14 @@ body, html, #app, .table
   display flex
   justify-content space-between
   flex-shrink 0
+.arrow
+  width 10px
+  height 100%
+  border-radius 10px
+.sortDown
+  background-color green
+.sortUp
+  background-color blue
 .calendar
   position absolute
   display none
