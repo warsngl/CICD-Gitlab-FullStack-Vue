@@ -1,6 +1,6 @@
-# test-task-crm-table
+# CICD-Gitlab-FullStack-Vue_test-task
 
-https://warsngl.github.io/test-task-crm-table/
+Google Cloud 35.228.217.147
 
 Сверстать адаптивную таблицу с данными по следующим параметрам с фильтрами и сортировокой по каждому столбцу
 
