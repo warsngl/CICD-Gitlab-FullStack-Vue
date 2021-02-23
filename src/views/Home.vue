@@ -166,6 +166,8 @@ body, html, #app, .table
 .row
   display flex
   justify-content space-between
+  &>*
+    border 1px solid gray
 .body
   flex 1 0 auto
 .statusBar
