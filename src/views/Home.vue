@@ -1,40 +1,41 @@
 <template lang='pug'>
-.table
-  .nav
-    .id(@click="sort('id')") №
-    .status 
+table.table
+  thead.nav
+    th.id №
+    span.arrow(@click="sort('id')") {{arrow}}
+    th.status 
       select(v-model='status')
         option(value='0') Статус
         option Открыта
         option Закрыта
-      .arrow(@click="sort('status')" :class='{sortDown: reverse, sortUp:!reverse}')
-    .position
+      span.arrow(@click="sort('status')") {{arrow}}
+    th.position
       select(v-model='position')
         option(value='0') Должность
         option Junior
         option Middle
         option Senior 
         option Full 
-      .arrow(@click="sort('position')" :class='{sortDown: reverse, sortUp:!reverse}')
-    .city
+      span.arrow(@click="sort('position')") {{arrow}}
+    th.city
       input(v-model='city' placeholder='Город')
-      .arrow(@click="sort('city')" :class='{sortDown: reverse, sortUp:!reverse}')
-    .name 
+      span.arrow(@click="sort('city')") {{arrow}}
+    th.name 
       input(v-model='name' placeholder='Наименование')
-      .arrow(@click="sort('name')" :class='{sortDown: reverse, sortUp:!reverse}')
-    .date Дата
+      span.arrow(@click="sort('name')") {{arrow}}
+    th.date Дата
       v-date-picker.calendar(
         v-model='range'
         is-range
       )
-  .body
-    .row(v-for='(r,idx) in sortedData' :key='idx')
-      .id {{r.id}}
-      .status {{r.status}}
-      .position {{r.position}}
-      .city {{r.city}}
-      .name {{r.name}}
-      .date {{r.date.toJSON() | date()}}
+  tbody
+    tr(v-for='(r,idx) in sortedData' :key='idx')
+      td.id {{r.id}}
+      td.status {{r.status}}
+      td.position {{r.position}}
+      td.city {{r.city}}
+      td.name {{r.name}}
+      td.date {{r.date.toJSON() | date()}}
   .statusBar
     .result Найдено {{filteredData.length}}
     .pagination {{page+1}}
@@ -101,6 +102,9 @@ export default {
     pagList(){
       const start=this.page*this.size, end=start+this.size
       return this.filteredData.slice(start,end)
+    },
+    arrow(){
+      return this.reverse ? '↑': '↓'
     }
   },
   methods:{
@@ -131,12 +135,18 @@ export default {
 </script>
 
 <style lang='stylus'>
-body, html, #app, .table
+body, html, #app, table
   height 100%
   margin 0 
   padding 0
+  display: flex;
+  justify-content: center;
+table
   background-color pink
-.id,.status,.position,.city,.name,.date
+  max-width 90%
+  border-radius 10px
+  border 1px solid gray
+td,thead>*
   display flex
   justify-content center
 .id
@@ -155,38 +165,30 @@ body, html, #app, .table
     width 100%
 .date
   width 20%
-.table
+table
   margin 0 10px
   display flex
   flex-direction column
-.nav
+thead
   margin-top 5px
   display flex
   justify-content space-between
-.row
+tr
   display flex
   justify-content space-between
-  &>*
-    border 1px solid gray
-.body
+tbody
   flex 1 0 auto
 .statusBar
   margin-bottom 5px
   display flex
   justify-content space-between
   flex-shrink 0
-.arrow
-  width 10px
-  height 100%
-  border-radius 10px
-.sortDown
-  background-color green
-.sortUp
-  background-color blue
 .calendar
   position absolute
   display none
   z-index 2
+.arrow
+  cursor: pointer;
 .date:hover .calendar
   display block
   transform translateX(-60px)
