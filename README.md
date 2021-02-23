@@ -1,4 +1,4 @@
-# CICD-Gitlab-FullStack-Vue_test-task
+# CICD-Gitlab-FullStack-Vue
 
 Google Cloud http://35.228.217.147
 
