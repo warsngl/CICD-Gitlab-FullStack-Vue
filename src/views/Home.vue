@@ -40,7 +40,7 @@ table.table
     .result Найдено {{filteredData.length}}
     .pagination {{page+1}}
     button.prev(:disabled='page==0' @click='prevPage') Prev
-    button.next(:disabled='page==-1' @click='nextPage') Next
+    button.next(:disabled='page==pagecount-1' @click='nextPage') Next
     select(v-model='size')
       option(value=1) 1 на странице
       option(value=2) 2 на странице
@@ -180,6 +180,7 @@ tbody
   flex 1 0 auto
 .statusBar
   margin-bottom 5px
+  padding 0 10px
   display flex
   justify-content space-between
   flex-shrink 0
